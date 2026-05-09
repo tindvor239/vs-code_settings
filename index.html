@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSCode Background Gallery</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>VSCode Background Gallery</h1>
+
+    <div class="grid" id="grid"></div>
+
+    <script>
+        const backgrounds = [
+            "live-wallpaper.gif",
+            "cyberpunk.gif",
+            "rain.gif"
+        ];
+
+        const baseUrl =
+            "https://tindvor239.github.io/vs-code_settings/Images/Backgrounds/";
+
+        const grid = document.getElementById("grid");
+
+        backgrounds.forEach(file => {
+
+            const url = baseUrl + encodeURIComponent(file);
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <img class="preview" src="${url}" />
+
+                <div class="content">
+                    <div class="name">${file}</div>
+
+                    <button onclick="copyLink('${url}')">
+                        Copy Link
+                    </button>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url);
+
+            alert("Copied!");
+        }
+    </script>
+
+</body>
+</html>
