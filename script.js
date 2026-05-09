@@ -5,32 +5,42 @@ const grid = document.getElementById("grid");
 
 async function loadBackgrounds() {
 
-    const response = await fetch("./backgrounds.json");
+    try {
 
-    const backgrounds = await response.json();
+        const response = await fetch(
+            "https://tindvor239.github.io/vs-code_settings/backgrounds.json"
+        );
 
-    backgrounds.forEach(file => {
+        const backgrounds = await response.json();
 
-        const url = baseUrl + encodeURIComponent(file);
+        backgrounds.forEach(file => {
 
-        const card = document.createElement("div");
+            const url = encodeURI(baseUrl + file);
 
-        card.className = "card";
+            const card = document.createElement("div");
 
-        card.innerHTML = `
-            <img class="preview" src="${url}" />
+            card.className = "card";
 
-            <div class="content">
-                <div class="name">${file}</div>
+            card.innerHTML = `
+                <img class="preview" src="${url}" />
 
-                <button onclick="copyLink('${url}')">
-                    Copy Link
-                </button>
-            </div>
-        `;
+                <div class="content">
+                    <div class="name">${file}</div>
 
-        grid.appendChild(card);
-    });
+                    <button onclick="copyLink('${url}')">
+                        Copy Link
+                    </button>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+    }
+    catch(error) {
+
+        console.error(error);
+    }
 }
 
 function copyLink(url) {
