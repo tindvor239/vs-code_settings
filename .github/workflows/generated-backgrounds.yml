@@ -2,10 +2,13 @@ name: Generate Backgrounds JSON
 
 on:
   push:
+    paths:
+      - 'Images/Backgrounds/**'
+      - '.github/workflows/generate-backgrounds.yml'
 
 jobs:
 
-  generate-json:
+  generate-backgrounds-json:
 
     runs-on: ubuntu-latest
 
@@ -20,27 +23,29 @@ jobs:
       - name: Generate backgrounds.json
         run: |
 
-          cd Images/Backgrounds
+          python3 <<EOF
+          import json
+          import os
 
-          printf "[\n" > ../../backgrounds.json
+          folder = "Images/Backgrounds"
 
-          first=true
+          files = sorted([
+              f for f in os.listdir(folder)
+              if os.path.isfile(os.path.join(folder, f))
+          ])
 
-          for file in *; do
+          with open("backgrounds.json", "w", encoding="utf-8") as file:
+              json.dump(
+                  files,
+                  file,
+                  indent=2,
+                  ensure_ascii=False
+              )
 
-            if [ "$first" = true ]; then
-              first=false
-            else
-              printf ",\n" >> ../../backgrounds.json
-            fi
+          print("Generated backgrounds.json")
+          EOF
 
-            printf "  \"%s\"" "$file" >> ../../backgrounds.json
-
-          done
-
-          printf "\n]\n" >> ../../backgrounds.json
-
-      - name: Commit backgrounds.json
+      - name: Commit and push changes
         run: |
 
           git config user.name "github-actions"
@@ -48,6 +53,8 @@ jobs:
 
           git add backgrounds.json
 
-          git diff --cached --quiet || git commit -m "Auto update backgrounds.json"
+          git diff --cached --quiet && exit 0
+
+          git commit -m "Auto update backgrounds.json"
 
           git push
