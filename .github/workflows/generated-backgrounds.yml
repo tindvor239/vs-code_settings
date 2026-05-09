@@ -1,0 +1,55 @@
+name: Generate Backgrounds JSON
+
+on:
+  push:
+    paths:
+      - 'Images/Backgrounds/**'
+
+jobs:
+
+  generate-json:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate backgrounds.json
+        run: |
+
+          cd Images/Backgrounds
+
+          printf "[\n" > ../../backgrounds.json
+
+          first=true
+
+          for file in *; do
+
+            if [ "$first" = true ]; then
+              first=false
+            else
+              printf ",\n" >> ../../backgrounds.json
+            fi
+
+            printf "  \"%s\"" "$file" >> ../../backgrounds.json
+
+          done
+
+          printf "\n]\n" >> ../../backgrounds.json
+
+      - name: Commit backgrounds.json
+        run: |
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add backgrounds.json
+
+          git diff --cached --quiet || git commit -m "Auto update backgrounds.json"
+
+          git push
